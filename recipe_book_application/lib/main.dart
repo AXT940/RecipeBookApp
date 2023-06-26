@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_book_application/constants.dart';
 
+import 'package:recipe_book_application/recipes.dart';
+import 'package:recipe_book_application/meal_plan.dart';
+import 'package:recipe_book_application/shopping_list.dart';
+
 void main() {
   runApp(const MainApp());
 }
@@ -24,14 +28,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  int _selectedIndex = 0; 
 
-  void _openDrawer() {
-    _scaffoldKey.currentState!.openDrawer();
-  }
+  static final List<Text> _titleOptions = <Text>[const Text("Your Recipes"), const Text("Meal Plan"), const Text("Shopping List")];
+  static final List<Widget> _screenViewOptions = <Widget>[const RecipeList(title:"Your Recipes"), const MealPlan(title:"Meal Plan"), const ShoppingList(title: "Shopping List")];
 
-  void _closeDrawer() {
-    Navigator.of(context).pop();
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 
   @override
@@ -39,17 +44,21 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
         backgroundColor: backgroundColour,
         appBar: AppBar(backgroundColor: appBar, title: const Text("Homecook Recipe App", style: TextStyle(color:Color.fromARGB(255, 255, 255, 255)),),),
-        drawer: Drawer(child:Center(
-              child:ListView(children: [
-                  
-                  Card(child: ElevatedButton(onPressed: () {}, style: ButtonStyle(backgroundColor: MaterialStatePropertyAll<Color>(recipesColour)), child: const Text("Recipes", style: TextStyle(color:Colors.white,),)),), 
-                  Card(child:ElevatedButton(onPressed: () {},  style: ButtonStyle(backgroundColor: MaterialStatePropertyAll<Color>(shoppingListColour)), child: const Text("Shopping List", style: TextStyle(color:Colors.white,), ),)), 
-                  Card(child: ElevatedButton(onPressed: () {}, style: ButtonStyle(backgroundColor: MaterialStatePropertyAll<Color>(mealPlanColour)), child: const Text("Meal Plan", style:TextStyle(color:Colors.white,),)))],
-              ),
-        )),
-        body: const Center(
-          child: Text("Hello World."),
-        ),
+        body: _screenViewOptions.elementAt(_selectedIndex),
+        bottomNavigationBar: BottomNavigationBar(items: [BottomNavigationBarItem(
+            icon: const Icon(Icons.dining),
+            label: 'Recipes',
+            backgroundColor: recipesColour,
+          ),
+          BottomNavigationBarItem(icon: const Icon(Icons.shopping_basket), 
+          label: "Basket",
+          backgroundColor: shoppingListColour),
+          BottomNavigationBarItem(icon: const Icon(Icons.calendar_view_month), 
+          label: "Meal Plan",
+          backgroundColor: mealPlanColour)],
+          currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+          ),
       );
   }
 }
