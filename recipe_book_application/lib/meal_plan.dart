@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:recipe_book_application/constants.dart';
+import 'package:recipe_book_application/type.dart';
 
 class MealPlan extends StatefulWidget {
   const MealPlan({super.key, required this.title, req});

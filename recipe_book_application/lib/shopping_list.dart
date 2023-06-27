@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:recipe_book_application/constants.dart';
+import 'package:recipe_book_application/type.dart';
 
 class ShoppingList extends StatefulWidget {
   const ShoppingList({super.key, required this.title});
