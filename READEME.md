@@ -12,4 +12,6 @@ For Windows and Linux, the sqflite_common_ffi library is used to apply a wrapper
 
 ## Recipes
 
-The recipe segment of the app shows a list of recipes
+The recipe segment of the app shows a list of recipes which are held in a SQLite database. The tables of which are shown below: 
+
+<img src='img/RecipeAppDatabases.png' alt="Unable to find image">
