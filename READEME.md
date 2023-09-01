@@ -15,3 +15,28 @@ For Windows and Linux, the sqflite_common_ffi library is used to apply a wrapper
 The recipe segment of the app shows a list of recipes which are held in a SQLite database. The tables of which are shown below: 
 
 <img src='img/RecipeAppDatabases.png' alt="Unable to find image">
+
+Each recipe contains: 
+
+1. Title
+2. Description
+3. Method
+4. Ingredients
+5. Length
+6. Serves
+7. Categories
+
+## Icons 
+- takeout_dining 
+- soup_kitchen
+- rice_bowl 
+- restaurant
+- recommend 
+- ramen_dining
+- local_grocery_store
+- local_bar
+- local_cafe
+- liquor
+- kitchen 
+- edit_sharp
+- delete

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import 'package:recipe_book_application/type.dart';
 
 class RecipeList extends StatefulWidget {
@@ -114,7 +115,7 @@ class _RecipeCardState extends State<RecipeCard> {
     return Center(
       child: ListView(
         physics: const BouncingScrollPhysics(),
-        children: [],
+        children: const [],
       ),
     );
   }
