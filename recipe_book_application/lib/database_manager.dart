@@ -63,8 +63,6 @@ class DatabaseManager {
     final List<Map<String, dynamic>> records =
         await database.query(Ingredient.tableName);
     return List.generate(records.length, (index) {
-      print(
-          "Name ${records[index]['name']} Price ${records[index]['price']} Price Type ${records[index]['price'].runtimeType}");
       double value = 0;
       if (records[index]['price'].runtimeType == int) {
         value = 0.0;

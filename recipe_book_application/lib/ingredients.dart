@@ -17,11 +17,7 @@ class _IngredientListState extends State<IngredientList> {
   final TextEditingController _priceInputController = TextEditingController();
 
   List<Ingredient> _data = [];
-  late ListView _listView = _createEmptyList();
-
-  bool _isNumeric(String s) {
-    return double.tryParse(s) != null;
-  }
+  //late ListView _listView = _createEmptyList();
 
   AlertDialog _addIngredientDialog() {
     return AlertDialog(
@@ -44,9 +40,6 @@ class _IngredientListState extends State<IngredientList> {
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: "Name of the ingredient"),
-                onSaved: (String? value) {
-                  print(value);
-                },
                 validator: (String? value) {
                   return (value == null)
                       ? 'Enter a name for the ingredient'
@@ -72,7 +65,7 @@ class _IngredientListState extends State<IngredientList> {
                   print(value);
                 },
                 validator: (String? value) {
-                  return (value != null && !_isNumeric(value))
+                  return (value != null && !isNumeric(value))
                       ? 'Please enter a number'
                       : null;
                 },
@@ -114,58 +107,24 @@ class _IngredientListState extends State<IngredientList> {
     );
   }
 
-  ListView _createEmptyList() {
-    return ListView(
-      // crossAxisAlignment: CrossAxisAlignment.center,
-      // mainAxisAlignment: MainAxisAlignment.center,
-      physics: const AlwaysScrollableScrollPhysics(),
-      children: const [
-        Padding(
-          padding: EdgeInsets.only(top: 16),
-        ),
-        Icon(
-          Icons.search,
-          color: Color.fromARGB(255, 119, 119, 119),
-          size: 60,
-        ),
-        Padding(
-          padding: EdgeInsets.only(top: 16),
-        ),
-        Text(
-          'No ingredients yet.',
-        )
-      ],
-    );
-  }
-
   Future<void> _getIngredientData() async {
     try {
       _data = await DatabaseManager.retrieveIngredients();
-    } on DatabaseException {
+    } on DatabaseException catch (e) {
       _data = [];
+      print("Database Exception ${e}");
     }
-    _refreshListView();
   }
 
-  Future<void> _refreshListView() async {
-    if (_data.isEmpty) {
-      _listView = _createEmptyList();
-    }
-
-    _listView = ListView.builder(
-      itemCount: _data.length,
-      itemBuilder: (BuildContext context, int index) {
-        Ingredient ingredient = _data[index];
-        return IngredientCard(ingredient: ingredient);
-      },
-      padding: const EdgeInsets.all(10),
-      physics: const AlwaysScrollableScrollPhysics(),
-    );
+  Future<void> _refreshState() async {
+    setState(() {
+      _getIngredientData();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    _getIngredientData();
+    _refreshState();
     return Scaffold(
       backgroundColor: backgroundColour,
       appBar: AppBar(
@@ -176,10 +135,10 @@ class _IngredientListState extends State<IngredientList> {
         ),
         backgroundColor: backgroundColour,
       ),
-      body: RefreshIndicator(
-        child: _listView,
-        onRefresh: _refreshListView,
-      ),
+      body: RefreshIndicator(onRefresh: _refreshState, child: Column(
+        children: [Expanded(child: ListView.builder(itemCount: _data.length, itemBuilder: (context, index) => IngredientCard(ingredient: _data[index]),)),
+        ],
+      ),),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () => showDialog<String>(
@@ -201,6 +160,70 @@ class IngredientCard extends StatefulWidget {
 }
 
 class _IngredientCardState extends State<IngredientCard> {
+
+  final TextEditingController _nameInputController = TextEditingController();
+  final TextEditingController _priceInputController = TextEditingController();
+
+  AlertDialog _editIngredient() {
+    return AlertDialog(title: const Text("Edit ingredient", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),),
+    titlePadding: const EdgeInsets.only(left: 10, top: 10),
+    content: SingleChildScrollView(physics: const BouncingScrollPhysics(),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const Text(
+                "Name:",
+                style: TextStyle(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.left,
+              ),
+              const Padding(padding: EdgeInsets.only(bottom: 5)),
+              TextFormField(
+                controller: _nameInputController,
+                decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: "Name of the ingredient"),
+                textCapitalization: TextCapitalization.sentences,
+              ),
+              const Padding(padding: EdgeInsets.only(bottom: 10)),
+              const Text(
+                "Price:",
+                style: TextStyle(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.left,
+              ),
+              const Padding(padding: EdgeInsets.only(bottom: 5)),
+              TextFormField(
+                controller: _priceInputController,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: "How much does this cost?"),
+                validator: (String? value) {
+                  return (value != null && !isNumeric(value))
+                      ? 'Please enter a number'
+                      : null;
+                },
+              ),
+            ],
+          )),
+          actions: [ MaterialButton(child: Text("Discard", style: TextStyle(color: discardButtonColour),), 
+            onPressed: () {
+              Navigator.pop(context);
+            },),
+            MaterialButton(child: const Text("Save", style: TextStyle(color: Color.fromARGB(255, 0, 93, 199)),), onPressed: () {Navigator.pop(context);},)],
+          );
+  }
+
+  AlertDialog _deleteDialog() {
+    return AlertDialog(title: const Text("Delete ingredient", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),), content: Text("Are you sure you want to delete ${widget.ingredient.name}?"),
+    titlePadding: const EdgeInsets.only(left: 10, top: 10),
+    actions: [ MaterialButton(child: Text("Cancel", style: TextStyle(color: discardButtonColour),), 
+    onPressed: () {
+      Navigator.pop(context);
+    },),
+    MaterialButton(child: const Text("Delete", style: TextStyle(color: Color.fromARGB(200, 255, 0, 0)),), onPressed: () {Navigator.pop(context);},)],);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -217,13 +240,24 @@ class _IngredientCardState extends State<IngredientCard> {
           return Scaffold(
             appBar: AppBar(
                 title: Text(
-              widget.ingredient.name,
-            )),
+              widget.ingredient.name,),
+              actions: [IconButton(onPressed: () => showDialog<String>(
+            context: context,
+            builder: (BuildContext context) {
+              return _deleteDialog();
+            }), icon: const Icon(Icons.delete)), 
+            IconButton(onPressed: () => showDialog<String>(
+            context: context,
+            builder: (BuildContext context) {
+              return _editIngredient();
+            }), icon: const Icon(Icons.edit_sharp))],),
             body: Center(
               child: Column(
                 children: [
+                  const SizedBox(height: 10),
                   Row(
                     children: [
+                      const SizedBox(width: 10),
                       const Text(
                         "Name:  ",
                         style: TextStyle(
@@ -233,8 +267,10 @@ class _IngredientCardState extends State<IngredientCard> {
                           style: const TextStyle(fontSize: 16)),
                     ],
                   ),
+                  const SizedBox(height: 10),
                   Row(
                     children: [
+                      const SizedBox(width: 10),
                       const Text(
                         "Price:  ",
                         style: TextStyle(

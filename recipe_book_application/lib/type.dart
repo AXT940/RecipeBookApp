@@ -76,3 +76,7 @@ class Category {
     return {'type': type};
   }
 }
+
+bool isNumeric(String s) {
+    return double.tryParse(s) != null;
+}
