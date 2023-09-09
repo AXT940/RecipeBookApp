@@ -47,15 +47,17 @@ class Recipe {
 }
 
 class Ingredient {
+  final int id;
   final String name;
   final double price;
 
   static const String tableName = "Ingredients";
 
-  const Ingredient({required this.name, this.price = 0.0});
+  const Ingredient({required this.name, this.price = 0.0, this.id = -1});
 
   Ingredient.fromMap(Map<String, dynamic> ingredient)
-      : name = ingredient['name'],
+      : id = ingredient['id'],
+        name = ingredient['name'],
         price = ingredient['price'];
 
   Map<String, Object> toMap() {

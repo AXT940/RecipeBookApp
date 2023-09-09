@@ -69,8 +69,18 @@ class DatabaseManager {
       } else {
         value = records[index]['price'];
       }
-      return Ingredient(name: records[index]['name'], price: value);
+      return Ingredient(id: records[index]['id'], name: records[index]['name'], price: value);
     });
+  }
+
+  static Future<void> editIngredient(Ingredient ingredient) async {
+    final database = await _openDB();
+    await database.update(Ingredient.tableName, ingredient.toMap(), where: "id = ?", whereArgs: [ingredient.id]);
+  }
+
+  static Future<void> deleteIngredient(Ingredient ingredient) async {
+    final database = await _openDB();
+    await database.delete(Ingredient.tableName, where: "id = ?", whereArgs: [ingredient.id]);
   }
 
   //Categories

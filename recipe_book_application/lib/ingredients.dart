@@ -107,18 +107,21 @@ class _IngredientListState extends State<IngredientList> {
     );
   }
 
-  Future<void> _getIngredientData() async {
+  Future<List<Ingredient>> _getIngredientData() async {
+    List<Ingredient> data = [];
     try {
-      _data = await DatabaseManager.retrieveIngredients();
+      data = await DatabaseManager.retrieveIngredients();
     } on DatabaseException catch (e) {
-      _data = [];
+      data = [];
       print("Database Exception ${e}");
     }
+    return data;
   }
 
   Future<void> _refreshState() async {
+    List<Ingredient> data = await _getIngredientData();
     setState(() {
-      _getIngredientData();
+      _data = data;
     });
   }
 
@@ -208,9 +211,18 @@ class _IngredientCardState extends State<IngredientCard> {
           )),
           actions: [ MaterialButton(child: Text("Discard", style: TextStyle(color: discardButtonColour),), 
             onPressed: () {
+              _nameInputController.text = "";
+              _priceInputController.text = "";
               Navigator.pop(context);
             },),
-            MaterialButton(child: const Text("Save", style: TextStyle(color: Color.fromARGB(255, 0, 93, 199)),), onPressed: () {Navigator.pop(context);},)],
+            MaterialButton(child: const Text("Save", style: TextStyle(color: Color.fromARGB(255, 0, 93, 199)),), onPressed: () {    
+              String name = (_nameInputController.text == "") ? widget.ingredient.name : _nameInputController.text; 
+              double price = (_priceInputController.text == "") ? widget.ingredient.price : double.tryParse(_priceInputController.text) ?? 00.00;
+              DatabaseManager.editIngredient(Ingredient(id: widget.ingredient.id, name: name, price: price));
+              _nameInputController.text = "";
+              _priceInputController.text = "";
+              Navigator.pop(context);
+              },)],
           );
   }
 
@@ -221,7 +233,11 @@ class _IngredientCardState extends State<IngredientCard> {
     onPressed: () {
       Navigator.pop(context);
     },),
-    MaterialButton(child: const Text("Delete", style: TextStyle(color: Color.fromARGB(200, 255, 0, 0)),), onPressed: () {Navigator.pop(context);},)],);
+    MaterialButton(child: const Text("Delete", style: TextStyle(color: Color.fromARGB(200, 255, 0, 0)),), onPressed: () {
+      DatabaseManager.deleteIngredient(widget.ingredient);
+      Navigator.pop(context);
+      Navigator.pop(context);
+    },)],);
   }
 
   @override

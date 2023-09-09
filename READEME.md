@@ -40,3 +40,7 @@ Each recipe contains:
 - kitchen 
 - edit_sharp
 - delete
+
+
+
+1. Try making _getIngredientData return list of ingredients then use setState in _refreshState to set the _data data member. 

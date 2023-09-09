@@ -9,6 +9,7 @@ import 'package:recipe_book_application/meal_plan.dart';
 import 'package:recipe_book_application/shopping_list.dart';
 
 import 'package:recipe_book_application/ingredients.dart';
+import 'package:recipe_book_application/categories.dart';
 
 void main() async {
   if (Platform.isWindows || Platform.isLinux) {
@@ -46,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const ShoppingList(title: "Shopping List"),
     const MealPlan(title: "Meal Plan"),
     const IngredientList(title: "Ingredients"),
+    const CategoryList(title: "Categories"),
   ];
 
   static final List<Text> _screenTitles = <Text>[
@@ -116,7 +118,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.pop(context);
               },
             ),
-            const ListTile(title: Text("Categories")),
+            ListTile(title: const Text("Categories"), onTap: () {
+              _onItemTapped(4);
+              Navigator.pop(context);
+            }),
           ],
         ),
       ),
